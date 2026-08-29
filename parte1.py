@@ -1,3 +1,5 @@
+"""Implementa metodos numericos para aproximar raices de funciones."""
+
 import sympy as sp
 import numpy as np
 
@@ -123,3 +125,56 @@ print(biseccion("x**2+1", -1, 1, 1000, 1e-8))
 
 # Caso donde un valor inicial ya es raíz
 print(secante("x**2-4", 2, 3, 1000, 1e-8))
+
+
+
+# Metodo de Newton Raphson
+
+
+def newton_raphson(f, x0, iterMax, tol):
+    x = sp.symbols("x")
+    funcion_simbolica = sp.sympify(f)
+    derivada_simbolica = sp.diff(funcion_simbolica, x)
+    funcion_numerica = sp.lambdify(x, funcion_simbolica, "numpy")
+    derivada_numerica = sp.lambdify(x, derivada_simbolica, "numpy")
+
+#aprox y error inicial
+    xk = x0
+    k = 0
+    erk = abs(funcion_numerica(xk))
+
+#se verifica si el valor inicial es una raiz
+    if erk <= tol:
+        conv = 1
+        return xk, erk, k, conv
+
+#calcular las aproximaciones
+    while k < iterMax and erk > tol:
+        valor_derivada = derivada_numerica(xk)
+
+#se evita dividir entre cero
+        if valor_derivada == 0:
+            conv = 0
+            return xk, erk, k, conv
+
+        k = k + 1
+
+#nueva aprox
+        xk = xk - funcion_numerica(xk)/valor_derivada
+
+#calcular el error
+        erk = abs(funcion_numerica(xk))
+
+#se verifica si el metodo converge
+    if erk <= tol and k < iterMax:
+        conv = 1
+    else:
+        conv = 0
+
+    return xk, erk, k, conv
+
+
+# Prueba 
+print(newton_raphson("x**2-2", 1, 1000, 1e-8))
+
+ 
