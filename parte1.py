@@ -230,5 +230,133 @@ print(steffensen("x**2-2", 1, 1000, 1e-8))
 
 
 
- 
- 
+# Metodo de la falsa posición
+
+def falsa_posicion(f, a, b, iterMax, tol):
+    x = sp.symbols("x")
+    funcion_simbolica = sp.sympify(f)
+    funcion_numerica = sp.lambdify(x, funcion_simbolica, "numpy")
+
+#evaluar en extremos
+    valor_a = funcion_numerica(a)
+    valor_b = funcion_numerica(b)
+
+#verificar si algun extremo es raiz
+    if valor_a == 0:
+        xk = a
+        erk = 0
+        k = 0
+        conv = 1
+        return xk, erk, k, conv
+
+    if valor_b == 0:
+        xk = b
+        erk = 0
+        k = 0
+        conv = 1
+        return xk, erk, k, conv
+
+    if valor_a*valor_b > 0:
+        xk = np.nan
+        erk = np.nan
+        k = 0
+        conv = 0
+        return xk, erk, k, conv
+    
+    
+
+    k = 0
+    erk = np.inf
+    xk = b - (funcion_numerica( b ) * ( b-a ))/(funcion_numerica( b ) - funcion_numerica( a ))
+
+    while k < iterMax and erk > tol:
+        k = k + 1
+        xk = b - (funcion_numerica( b ) * ( b-a )) / (funcion_numerica( b ) - funcion_numerica( a ))
+        erk = abs(funcion_numerica(xk))
+
+#verifica si se alcanza la tol
+        if erk <= tol:
+            break
+
+        if funcion_numerica(a)*funcion_numerica(xk) < 0:
+            b = xk
+        else:
+            a = xk
+
+#si el metodo converge 
+    if erk <= tol and k < iterMax:
+        conv = 1
+    else:
+        conv = 0
+
+    return xk, erk, k, conv
+
+
+# prueba falsa_posicion
+print(falsa_posicion("x**2-2", 1, 2, 1000, 1e-8))
+
+
+
+# Metodo de Muller
+
+def muller(f, x0, x1, x2, iterMax, tol):
+    x = sp.symbols("x")
+    funcion_simbolica = sp.sympify(f)
+    funcion_numerica = sp.lambdify(x, funcion_simbolica, "numpy")
+
+# se verifica si algun valor inicial es una raiz 
+    if funcion_numerica(x0) == 0:
+        xk = x0
+        erk = 0
+        k = 0
+        conv = 1
+        return xk, erk, k, conv
+
+    if funcion_numerica(x1) == 0:
+        xk = x1
+        erk = 0
+        k = 0
+        conv = 1
+        return xk, erk, k, conv
+
+    if funcion_numerica(x2) == 0:
+        xk = x2
+        erk = 0
+        k = 0
+        conv = 1
+        return xk, erk, k, conv
+
+#valores iniciales
+    k = 0
+    erk = np.inf
+
+    while k < iterMax and erk > tol:
+
+        c = funcion_numerica(x2)
+        b = (((x0 - x2)**2)*(funcion_numerica(x1) - funcion_numerica(x2)) - ((x1 - x2)**2)*(funcion_numerica(x0) - funcion_numerica(x2)) ) / ((x0-x1) * (x0-x2) * (x1-x2))
+        a = ((x1 - x2)*(funcion_numerica(x0) - funcion_numerica(x2)) - ((x0 - x2))*(funcion_numerica(x1) - funcion_numerica(x2)) ) / ((x0-x1) * (x0-x2) * (x1-x2))
+
+# Aprox
+        xk = x2 - (2*c) / (b + np.sign(b) * np.sqrt(b**2 - 4*a*c))
+        k = k + 1
+
+
+# Calcular el error
+        erk = abs(funcion_numerica(xk))
+
+
+# actualizar los tres puntos
+        puntos = [x0, x1, x2]
+        puntos.sort(key=lambda x: abs(x - xk))
+        x0, x1 = puntos[0], puntos[1]
+        x2 = xk
+
+
+    if erk <= tol and k < iterMax:
+        conv = 1
+    else:
+        conv = 0
+
+    return float(xk), float(erk), k, conv
+
+print(muller("x**2-2", 1, 2, 3, 1000, 1e-8))
