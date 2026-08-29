@@ -177,4 +177,58 @@ def newton_raphson(f, x0, iterMax, tol):
 # Prueba 
 print(newton_raphson("x**2-2", 1, 1000, 1e-8))
 
+
+
+
+# Metodo de Steffensen
+
+
+def steffensen(f, x0, iterMax, tol):
+    x = sp.symbols("x")
+    funcion_simbolica = sp.sympify(f)
+    funcion_numerica = sp.lambdify(x, funcion_simbolica, "numpy")
+
+#aprox y error inicial
+    xk = x0
+    k = 0
+    erk = abs(funcion_numerica(xk))
+
+#se verifica si el valor inicial es una raiz
+    if erk <= tol:
+        conv = 1
+        return xk, erk, k, conv
+
+#calcular las aproximaciones
+    while k < iterMax and erk > tol:
+        valor_funcion = funcion_numerica(xk)
+        denominador = funcion_numerica(xk + valor_funcion) - valor_funcion
+
+#se evita dividir entre cero
+        if denominador == 0:
+            conv = 0
+            return xk, erk, k, conv
+
+        k = k + 1
+
+#nueva aprox con la formula de Steffensen
+        xk = xk - valor_funcion**2/denominador
+
+#calcular el error
+        erk = abs(funcion_numerica(xk))
+
+#se verifica si el metodo converge
+    if erk <= tol and k < iterMax:
+        conv = 1
+    else:
+        conv = 0
+
+    return xk, erk, k, conv
+
+
+# Prueba 
+print(steffensen("x**2-2", 1, 1000, 1e-8))
+
+
+
+ 
  
