@@ -117,14 +117,14 @@ def biseccion(f, a, b, iterMax, tol):
 
     return xk, erk, k, conv
 
-print(secante("x**2-2", 1, 2, 1000, 1e-8))
-print(biseccion("x**2-2", 1, 2, 1000, 1e-8))
+# print(secante("x**2-2", 1, 2, 1000, 1e-8))
+# print(biseccion("x**2-2", 1, 2, 1000, 1e-8))
 
 # Caso donde bisección no cumple cambio de signo
-print(biseccion("x**2+1", -1, 1, 1000, 1e-8))
+# print(biseccion("x**2+1", -1, 1, 1000, 1e-8))
 
 # Caso donde un valor inicial ya es raíz
-print(secante("x**2-4", 2, 3, 1000, 1e-8))
+# print(secante("x**2-4", 2, 3, 1000, 1e-8))
 
 
 
@@ -175,7 +175,7 @@ def newton_raphson(f, x0, iterMax, tol):
 
 
 # Prueba 
-print(newton_raphson("x**2-2", 1, 1000, 1e-8))
+# print(newton_raphson("x**2-2", 1, 1000, 1e-8))
 
 
 
@@ -226,7 +226,7 @@ def steffensen(f, x0, iterMax, tol):
 
 
 # Prueba 
-print(steffensen("x**2-2", 1, 1000, 1e-8))
+# print(steffensen("x**2-2", 1, 1000, 1e-8))
 
 
 
@@ -289,11 +289,11 @@ def falsa_posicion(f, a, b, iterMax, tol):
     else:
         conv = 0
 
-    return xk, erk, k, conv
+    return float(xk), float(erk), k, conv
 
 
 # prueba falsa_posicion
-print(falsa_posicion("x**2-2", 1, 2, 1000, 1e-8))
+# print(falsa_posicion("x**2-2", 1, 2, 1000, 1e-8))
 
 
 
@@ -359,4 +359,4 @@ def muller(f, x0, x1, x2, iterMax, tol):
 
     return float(xk), float(erk), k, conv
 
-print(muller("x**2-2", 1, 2, 3, 1000, 1e-8))
+# print(muller("x**2-2", 1, 2, 3, 1000, 1e-8))
