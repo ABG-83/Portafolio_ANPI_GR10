@@ -32,6 +32,11 @@ def analisis_funcion(f_str):
     # Valores utilizados para Secante y Bisección
     valor_1 = funcion_numerica(1)
     valor_2 = funcion_numerica(2)
+
+    # Valores utilizados para justificar Newton-Raphson y Steffensen
+    derivada_simbolica = sp.diff(funcion_simbolica, x)
+    derivada_numerica = sp.lambdify(x, derivada_simbolica, "numpy")
+    denominador_steffensen = funcion_numerica(1 + valor_1) - valor_1
     
     
     print("""
@@ -54,6 +59,31 @@ def analisis_funcion(f_str):
         print(" El intervalo cumple la condición necesaria para Bisección.")
     else:
         print(" El intervalo no cumple la condición necesaria para Bisección.")
+
+    print("""
+    - Newton-Raphson:
+        Se selecciona x0=1 porque en la gráfica se observa una raíz positiva
+        entre 1 y 2. Además, la derivada en x0 no es cero, por lo que la
+        primera iteración del método se encuentra correctamente definida.
+
+    - Steffensen:
+        Se selecciona x0=1 porque es un valor cercano a la raíz positiva
+        observada entre 1 y 2. También se verifica que el denominador
+        f(x0+f(x0))-f(x0) no sea cero antes de iniciar las iteraciones.
+          """)
+
+    print(" f'(1) =", derivada_numerica(1))
+    print(" Denominador inicial de Steffensen =", denominador_steffensen)
+
+    if derivada_numerica(1) != 0:
+        print(" Como f'(1) es diferente de cero, Newton-Raphson puede iniciar.")
+    else:
+        print(" Newton-Raphson no puede iniciar porque f'(1) es cero.")
+
+    if denominador_steffensen != 0:
+        print(" Como el denominador es diferente de cero, Steffensen puede iniciar.")
+    else:
+        print(" Steffensen no puede iniciar porque su denominador es cero.")
 
     
     print("""
@@ -151,9 +181,27 @@ if __name__ == "__main__":
     plt.ylabel("Error final")
     plt.grid(True)
     plt.show()
-    
-    
-    
+
+
+    # Gráfica comparativa del número de iteraciones
+    metodos = []
+    iteraciones = []
+
+    for fila in resultados:
+        metodo, xk, erk, k, t_seg, conv = fila
+        metodos.append(metodo)
+        iteraciones.append(k)
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(metodos, iteraciones)
+
+    plt.title("Comparación del número de iteraciones de los métodos")
+    plt.xlabel("Método")
+    plt.ylabel("Número de iteraciones")
+    plt.grid(True)
+    plt.show()
+
+
     # Gráfica comparativa de tiempos 
     metodos = []
     tiempos_ms = []
@@ -171,13 +219,58 @@ if __name__ == "__main__":
     plt.ylabel("Tiempo de ejecución (ms)")
     plt.grid(True)
     plt.show()
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+    # Análisis comparativo de los seis métodos
+    resultados_convergentes = [fila for fila in resultados if fila[5] == 1]
+    menor_error = min(resultados, key=lambda fila: fila[2])
+    menos_iteraciones = min(resultados, key=lambda fila: fila[3])
+    menor_tiempo = min(resultados, key=lambda fila: fila[4])
+
+    aproximaciones = [fila[1] for fila in resultados_convergentes]
+    diferencia_aproximaciones = max(aproximaciones) - min(aproximaciones)
+
+    print("\nAnálisis comparativo de los resultados:")
+
+    if len(resultados_convergentes) == len(resultados):
+        print("Todos los métodos alcanzaron la tolerancia solicitada y conv = 1.")
+    else:
+        print("No todos los métodos alcanzaron la tolerancia solicitada.")
+
+    print(f"Las aproximaciones convergen a la raíz positiva x = {aproximaciones[0]:.10f}.")
+    print(f"La diferencia máxima entre las aproximaciones es {diferencia_aproximaciones:.4e}.")
+    print(f"El menor error corresponde a {menor_error[0]}, con erk = {menor_error[2]:.4e}.")
+    print(f"El menor número de iteraciones corresponde a {menos_iteraciones[0]}, con k = {menos_iteraciones[3]}.")
+    print(f"El menor tiempo medido corresponde a {menor_tiempo[0]}, con {menor_tiempo[4] * 1000:.4f} ms.")
+
+    print("""
+La bisección fue el método que necesitó más iteraciones. Esto concuerda con
+su convergencia lineal
+
+La falsa posición también conserva un intervalo con cambio de signo, pero utiliza
+una interpolación lineal para generar la aproximación. Por esta razón puede
+requerir menos iteraciones que la bisección en este problema.
+
+La secante alcanzó la raíz con pocas iteraciones sin calcular derivadas. Su
+comportamiento fue más rápido que el de los métodos de intervalo, aunque su
+convergencia depende de que los valores iniciales sean adecuados.
+
+Newton-Raphson obtuvo una aproximación con un error muy pequeño y pocas
+iteraciones. El resultado es consistente con su convergencia cuadrática cerca
+de una raíz simple, aunque necesita calcular la derivada y requiere que esta no
+sea cero durante las iteraciones.
+
+Steffensen convergió hacia la misma raíz sin utilizar derivadas. Necesitó más
+iteraciones que Newton-Raphson y Secante para los valores iniciales elegidos,
+pero mantuvo un error inferior a la tolerancia solicitada.
+
+Müller utilizó una interpolación cuadrática a partir de tres valores iniciales.
+En este problema alcanzó la solución con muy pocas iteraciones y un error muy
+pequeño, aunque cada iteración requiere operaciones más complejas que los
+métodos basados en interpolación lineal.
+
+Los tiempos de ejecución son muy pequeños y pueden cambiar ligeramente entre
+ejecuciones. Por ello, deben interpretarse junto con el error y el número de
+iteraciones.
+""")
     
