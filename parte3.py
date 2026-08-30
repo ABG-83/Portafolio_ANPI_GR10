@@ -287,6 +287,7 @@ cantidad de iteraciones.
 La falsa posicion tambien conserva un intervalo con cambio de signo y utiliza
 interpolacion lineal. Puede avanzar mas rapido que la biseccion, aunque uno de
 los extremos del intervalo puede permanecer fijo durante varias iteraciones.
+Presentó el mayor error de los métodos utilizados.
 
 La secante no necesita derivadas y alcanza la solucion utilizando dos valores
 iniciales. Generalmente converge mas rapido que los metodos de intervalo, pero
@@ -303,7 +304,8 @@ factores de friccion positivos.
 
 Muller utiliza interpolacion cuadratica y tres valores iniciales. Puede alcanzar
 la solucion en pocas iteraciones, aunque cada iteracion requiere operaciones
-mas complejas y puede producir valores complejos en otros problemas.
+mas complejas y puede producir valores complejos en otros problemas. El bajo 
+numero de iteraciones lo hace competitivo en tiempo.
 
 Los tiempos medidos son muy pequeños y pueden variar entre ejecuciones. Por
 esta razon, la eficiencia debe evaluarse junto con el error, las iteraciones,
