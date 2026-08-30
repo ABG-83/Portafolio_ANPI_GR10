@@ -89,12 +89,17 @@ def analisis_funcion(f_str):
     print("""
     - Falsa posición:
         Mirando la gráfica se nota que la raíz positiva está entre [1, 2]
-        Además se cumple el teorema de Bolzano
+        Además se cumple el teorema de Bolzano para este intervalo como se
+        demostró para bisección.
+        """)
         
+        
+    print("""
     - Müller:
-        Se toman x1=1 y x2=2, valores que encierran la raíz
-        Se usa x0=0, valor que permite generar correctamente la parábola 
-        trazada por los 3 puntos
+        Se usan tres aproximaciones iniciales, para las cuales se toman
+        x1=1 y x2=2, valores que encierran la raíz como se mira en la gráfica
+        Se usa como tercer valor x0=0, el cual permite generar correctamente 
+        la parábola trazada por los tres valores iniciales.
           """)
     
 if __name__ == "__main__":
