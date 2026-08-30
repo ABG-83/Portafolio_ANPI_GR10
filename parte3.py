@@ -95,10 +95,19 @@ if __name__ == "__main__":
 
     # Newton-Raphson
 
+    start_time = time.perf_counter()
+    xk, erk, k, conv = newton_raphson(g_str, 0.02, iter_max, tol)
+    total_time = time.perf_counter() - start_time
 
+    resultados.append(["Newton-Raphson", xk, erk, k, total_time, conv])
 
     # Steffensen
- 
+
+    start_time = time.perf_counter()
+    xk, erk, k, conv = steffensen(g_str, 0.0203, iter_max, tol)
+    total_time = time.perf_counter() - start_time
+
+    resultados.append(["Steffensen", xk, erk, k, total_time, conv])
 
 
     # Falsa Posición
