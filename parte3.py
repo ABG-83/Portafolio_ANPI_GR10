@@ -57,6 +57,43 @@ def analisis_funcion(g_str):
     else:
         print("El intervalo no cumple la condición necesaria para Bisección.")
 
+    # Valores iniciales para Newton-Raphson y Steffensen
+    valor_newton = 0.02
+    valor_steffensen = 0.0203
+    derivada_simbolica = sp.diff(funcion_simbolica, x)
+    derivada_numerica = sp.lambdify(x, derivada_simbolica, "numpy")
+
+    g_steffensen = funcion_numerica(valor_steffensen)
+    argumento_steffensen = valor_steffensen + g_steffensen
+    denominador_steffensen = funcion_numerica(argumento_steffensen) - g_steffensen
+
+    # Justificacion del valor inicial de Newton-Raphson
+    print("\nNewton-Raphson:")
+    print("Se selecciona x0 = 0.02 porque pertenece al intervalo fisico")
+    print("[0.02, 0.022], donde la grafica y el cambio de signo indican")
+    print("la presencia de una raiz. Ademas, x0 es positivo y cercano")
+    print("a la solucion observada en la grafica.")
+    print("g'(0.02) =", derivada_numerica(valor_newton))
+
+    if derivada_numerica(valor_newton) != 0:
+        print("Como g'(0.02) es diferente de cero, Newton-Raphson puede iniciar.")
+    else:
+        print("Newton-Raphson no puede iniciar porque g'(0.02) es cero.")
+
+    # Justificacion del valor inicial de Steffensen
+    print("\nSteffensen:")
+    print("Se selecciona x0 = 0.0203 porque la grafica permite ubicar la")
+    print("raiz cerca de este valor y se mantiene la condicion fisica f > 0.")
+    print("Tambien se verifica que x0 + g(x0) sea positivo y que el")
+    print("denominador de la formula de Steffensen sea diferente de cero.")
+    print("x0 + g(x0) =", argumento_steffensen)
+    print("g(x0 + g(x0)) - g(x0) =", denominador_steffensen)
+
+    if argumento_steffensen > 0 and denominador_steffensen != 0:
+        print("Las condiciones iniciales permiten aplicar Steffensen.")
+    else:
+        print("Las condiciones iniciales no permiten aplicar Steffensen.")
+
 
 if __name__ == "__main__":
 
@@ -147,6 +184,26 @@ if __name__ == "__main__":
     plt.title("Comparación del error final de los métodos")
     plt.xlabel("Método")
     plt.ylabel("Error final")
+    plt.grid(True)
+    plt.show()
+
+
+    # Grafica comparativa de tiempos de ejecucion
+
+    metodos = []
+    tiempos_ms = []
+
+    for fila in resultados:
+        metodo, xk, erk, k, t_seg, conv = fila
+        metodos.append(metodo)
+        tiempos_ms.append(t_seg*1000)
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(metodos, tiempos_ms)
+
+    plt.title("Comparacion del tiempo de ejecucion de los metodos")
+    plt.xlabel("Metodo")
+    plt.ylabel("Tiempo de ejecucion (ms)")
     plt.grid(True)
     plt.show()
     
