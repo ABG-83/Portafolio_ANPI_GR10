@@ -93,6 +93,35 @@ def analisis_funcion(g_str):
         print("Las condiciones iniciales permiten aplicar Steffensen.")
     else:
         print("Las condiciones iniciales no permiten aplicar Steffensen.")
+        
+        
+        
+    # Justificación de intervalo para falsa posición
+    print("\nFalsa posición:")
+    print("Similar al caso de bisección, se selecciona el intervalo")
+    print("[0.02, 0.022] porque se observa un cambio de signo de ")
+    print("g(f) dentro de este intervalo.")
+    print("g(0.02) =", g_inferior)
+    print("g(0.022) =", g_superior)
+    print("g(0.02)*g(0.022) =", g_inferior*g_superior)
+    
+    if g_inferior*g_superior < 0:
+        print("Como g(0.02)*g(0.022) < 0, el intervalo cumple")
+        print("la condición necesaria para aplicar Bisección.")
+    else:
+        print("El intervalo no cumple la condición necesaria para Bisección.")
+    
+    
+    # Justificación de valores iniciales para Muller
+    print("\nMüller:")
+    print("El método de Müller utiliza tres aproximaciones iniciales.")
+    print("Se seleccionan x1 = 0.02 y x2 = 0.022 porque en la gráfica")
+    print("se observa que la raíz positiva se encuentra entre valores")
+    print("cercanos a este intervalo.")
+    print("Además se selecciona x0 = 0.01 ya que es un valor que permite")
+    print("generar correctamente la parábola a partir de los tres valores")
+    print("iniciales usados para este método.")
+    
 
 
 if __name__ == "__main__":
@@ -148,10 +177,22 @@ if __name__ == "__main__":
 
 
     # Falsa Posición
+    
+    start_time = time.perf_counter()
+    xk, erk, k, conv = falsa_posicion(g_str, 0.02, 0.022, iter_max, tol)
+    total_time = time.perf_counter() - start_time
+
+    resultados.append(["Falsa posición", xk, erk, k, total_time, conv])
    
 
 
     # Müller
+    
+    start_time = time.perf_counter()
+    xk, erk, k, conv = muller(g_str, 0.01, 0.02, 0.022, iter_max, tol)
+    total_time = time.perf_counter() - start_time
+
+    resultados.append(["Müller", xk, erk, k, total_time, conv])
    
 
 
