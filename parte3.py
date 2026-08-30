@@ -311,4 +311,29 @@ Los tiempos medidos son muy pequeños y pueden variar entre ejecuciones. Por
 esta razon, la eficiencia debe evaluarse junto con el error, las iteraciones,
 las condiciones iniciales y la seguridad de convergencia de cada metodo.
 """)
+
+
+    print("\nInterpretación el resultado en el contexto del problema")
+    print("----------------------------------------------------------")
+    
+    
+    print ("""
+- Valor aproximado del factor de fricción:
+A partir de la convergencia de los métodos numéricos evaluados, se determina 
+que el factor de fricción de Darcy-Weisbach (f) aproximado para la tubería es:
+   
+  f ≈ 0.0202915461  (o 0.0203 redondeado a 4 cifras significativas)
+
+- Significado físico dentro del modelo hidráulico:
+En el modelo utilizado (g(f) = 0), la variable f representa el factor de 
+fricción de Darcy. Esta cantidad adimensional mide la resistencia y la pérdida 
+de energía que sufre el fluido al rozar contra las paredes internas de la 
+tubería durante su trayectoria.
+
+Representa la incógnita no lineal del modelo que vincula las características 
+del flujo (número de Reynolds) y la rugosidad de la tubería con la caída de 
+presión. Encontrar f ≈ 0.0203 permite cuantificar directamente la pérdida de 
+carga en el sistema hidráulico.
+       
+""")
     
