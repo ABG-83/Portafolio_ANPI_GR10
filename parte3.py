@@ -60,7 +60,7 @@ def analisis_funcion(g_str):
 
 if __name__ == "__main__":
 
-    # Datos de la tubería.
+    # Datos de la tubería
     diametro = 0.25
     rugosidad = 0.00015
     reynolds = 120000
