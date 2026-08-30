@@ -207,4 +207,65 @@ if __name__ == "__main__":
     plt.ylabel("Tiempo de ejecucion (ms)")
     plt.grid(True)
     plt.show()
+
+
+    # Analisis comparativo de los resultados
+
+    resultados_convergentes = [fila for fila in resultados if fila[5] == 1]
+    menor_error = min(resultados, key=lambda fila: fila[2])
+    menos_iteraciones = min(resultados, key=lambda fila: fila[3])
+    menor_tiempo = min(resultados, key=lambda fila: fila[4])
+
+    metodos_menor_error = [fila[0] for fila in resultados if fila[2] == menor_error[2]]
+    metodos_menos_iteraciones = [fila[0] for fila in resultados if fila[3] == menos_iteraciones[3]]
+
+    print("\nAnalisis comparativo de los resultados")
+    print("--------------------------------------")
+
+    if len(resultados_convergentes) == len(resultados):
+        print("Todos los metodos ejecutados alcanzaron la tolerancia y conv = 1.")
+    else:
+        print("No todos los metodos ejecutados alcanzaron la tolerancia solicitada.")
+
+    if resultados_convergentes:
+        aproximaciones = [fila[1] for fila in resultados_convergentes]
+        diferencia_aproximaciones = max(aproximaciones) - min(aproximaciones)
+
+        print(f"Los metodos convergentes aproximan f = {aproximaciones[0]:.10f}.")
+        print(f"La diferencia maxima entre aproximaciones es {diferencia_aproximaciones:.4e}.")
+
+    print(f"El menor error corresponde a {', '.join(metodos_menor_error)}, con erk = {menor_error[2]:.4e}.")
+    print(f"La menor cantidad de iteraciones corresponde a {', '.join(metodos_menos_iteraciones)}, con k = {menos_iteraciones[3]}.")
+    print(f"El menor tiempo medido corresponde a {menor_tiempo[0]}, con {menor_tiempo[4] * 1000:.4f} ms.")
+
+    print("""
+La biseccion ofrece convergencia segura porque parte de un intervalo con cambio
+de signo, pero su convergencia lineal hace que normalmente requiera una mayor
+cantidad de iteraciones.
+
+La falsa posicion tambien conserva un intervalo con cambio de signo y utiliza
+interpolacion lineal. Puede avanzar mas rapido que la biseccion, aunque uno de
+los extremos del intervalo puede permanecer fijo durante varias iteraciones.
+
+La secante no necesita derivadas y alcanza la solucion utilizando dos valores
+iniciales. Generalmente converge mas rapido que los metodos de intervalo, pero
+no conserva una garantia de convergencia por cambio de signo.
+
+Newton-Raphson presenta convergencia cuadratica cerca de una raiz simple. En
+este problema alcanza un error pequeno con pocas iteraciones, aunque necesita
+calcular la derivada y requiere que esta no sea cero.
+
+Steffensen obtiene una convergencia rapida sin calcular derivadas. En este
+problema fue necesario seleccionar un valor inicial cercano a la raiz para
+evitar aproximaciones negativas, ya que el modelo solo esta definido para
+factores de friccion positivos.
+
+Muller utiliza interpolacion cuadratica y tres valores iniciales. Puede alcanzar
+la solucion en pocas iteraciones, aunque cada iteracion requiere operaciones
+mas complejas y puede producir valores complejos en otros problemas.
+
+Los tiempos medidos son muy pequeños y pueden variar entre ejecuciones. Por
+esta razon, la eficiencia debe evaluarse junto con el error, las iteraciones,
+las condiciones iniciales y la seguridad de convergencia de cada metodo.
+""")
     
