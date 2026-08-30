@@ -107,9 +107,9 @@ def analisis_funcion(g_str):
     
     if g_inferior*g_superior < 0:
         print("Como g(0.02)*g(0.022) < 0, el intervalo cumple")
-        print("la condición necesaria para aplicar Bisección.")
+        print("la condición necesaria para aplicar Falsa posición.")
     else:
-        print("El intervalo no cumple la condición necesaria para Bisección.")
+        print("El intervalo no cumple la condición necesaria para Falsa posición.")
     
     
     # Justificación de valores iniciales para Muller
@@ -246,6 +246,25 @@ if __name__ == "__main__":
     plt.title("Comparacion del tiempo de ejecucion de los metodos")
     plt.xlabel("Metodo")
     plt.ylabel("Tiempo de ejecucion (ms)")
+    plt.grid(True)
+    plt.show()
+    
+    
+    # Gráfica comparativa del número de iteraciones
+    metodos = []
+    iteraciones = []
+
+    for fila in resultados:
+        metodo, xk, erk, k, t_seg, conv = fila
+        metodos.append(metodo)
+        iteraciones.append(k)
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(metodos, iteraciones)
+
+    plt.title("Comparación del número de iteraciones de los métodos")
+    plt.xlabel("Método")
+    plt.ylabel("Número de iteraciones")
     plt.grid(True)
     plt.show()
 
