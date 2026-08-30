@@ -155,16 +155,17 @@ if __name__ == "__main__":
    
 
 
-    print("\nResultados parciales")
-    print("--------------------")
+    # Tabla comparativa de resultados
+    print("\nTabla comparativa de resultados")
+    print("-------------------------------")
 
-    print(f"\n{'Método':<12} | {'xk':<14} | {'erk':<12} | {'k':<5} | {'Tiempo (ms)':<12} | {'conv':<5}")
-    print("-" * 72)
+    print(f"\n{'Método':<16} | {'xk':<14} | {'erk':<12} | {'k':<5} | {'Tiempo (ms)':<12} | {'conv':<5}")
+    print("-" * 76)
 
     for fila in resultados:
         metodo, xk, erk, k, t_seg, conv = fila
         tiempo_ms = t_seg*1000
-        print(f"{metodo:<12} | {xk:<14.10f} | {erk:<12.4e} | {k:<5} | {tiempo_ms:<12.4f} | {conv:<5}")
+        print(f"{metodo:<16} | {xk:<14.10f} | {erk:<12.4e} | {k:<5} | {tiempo_ms:<12.4f} | {conv:<5}")
 
 
     # Gráfica comparativa de errores
