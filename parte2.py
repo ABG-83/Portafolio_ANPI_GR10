@@ -29,7 +29,32 @@ def analisis_funcion(f_str):
     plt.legend()
     plt.show()
     
+    # Valores utilizados para Secante y Bisección
+    valor_1 = funcion_numerica(1)
+    valor_2 = funcion_numerica(2)
     
+    
+    print("""
+    - Secante:
+        Se seleccionan x0=1 y x1=2 porque en la gráfica se observa una
+        raíz positiva entre estos valores. El método de la secante requiere
+        dos aproximaciones iniciales y no necesita calcular la derivada.
+        
+    - Bisección:
+        Se selecciona el intervalo [1, 2] porque en la gráfica se observa
+        una raíz positiva dentro de este intervalo.
+          """)
+    
+    print(" f(1) =", valor_1)
+    print(" f(2) =", valor_2)
+    print(" f(1)*f(2) =", valor_1*valor_2)
+    
+    if valor_1*valor_2 < 0:
+        print(" Como f(1)*f(2) < 0, existe cambio de signo en [1, 2].")
+        print(" El intervalo cumple la condición necesaria para Bisección.")
+    else:
+        print(" El intervalo no cumple la condición necesaria para Bisección.")
+
     
     print("""
     - Falsa posición:
@@ -42,7 +67,6 @@ def analisis_funcion(f_str):
         trazada por los 3 puntos
           """)
     
-
 if __name__ == "__main__":
     
     f_str = "log(x**2 + 1) - cos(x) - 4*x**2 + 10"
@@ -107,9 +131,46 @@ if __name__ == "__main__":
         tiempo_ms = t_seg * 1000
         print(f"{metodo:<16} | {xk:<12.8f} | {erk:<12.4e} | {k:<5} | {tiempo_ms:<12.4f} | {conv:<5}")
        
+        
+       
+    # Gráfica comparativa de errores obtenidos
+    metodos = []
+    errores = []
+
+    for fila in resultados:
+        metodo, xk, erk, k, t_seg, conv = fila
+        metodos.append(metodo)
+        errores.append(erk)
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(metodos, errores)
+
+    plt.yscale("log")
+    plt.title("Comparación del error final de los métodos")
+    plt.xlabel("Método")
+    plt.ylabel("Error final")
+    plt.grid(True)
+    plt.show()
     
     
     
+    # Gráfica comparativa de tiempos 
+    metodos = []
+    tiempos_ms = []
+    
+    for fila in resultados:
+        metodo, xk, erk, k, t_seg, conv = fila
+        metodos.append(metodo)
+        tiempos_ms.append(t_seg*1000)
+    
+    plt.figure(figsize=(10, 6))
+    plt.bar(metodos, tiempos_ms)
+    
+    plt.title("Comparación del tiempo de ejecución de los métodos")
+    plt.xlabel("Método")
+    plt.ylabel("Tiempo de ejecución (ms)")
+    plt.grid(True)
+    plt.show()
     
     
     
