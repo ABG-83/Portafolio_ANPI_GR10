@@ -4,6 +4,8 @@ import sympy as sp
 import numpy as np
 
 
+# Método de la secante
+
 def secante(f, x0, x1, iterMax, tol):
     x = sp.symbols("x")
     funcion_simbolica = sp.sympify(f)
@@ -59,6 +61,10 @@ def secante(f, x0, x1, iterMax, tol):
     return xk, erk, k, conv
 
 
+
+
+
+# metodo de la biseccion
 
 def biseccion(f, a, b, iterMax, tol):
     x = sp.symbols("x")
@@ -117,19 +123,11 @@ def biseccion(f, a, b, iterMax, tol):
 
     return xk, erk, k, conv
 
-# print(secante("x**2-2", 1, 2, 1000, 1e-8))
-# print(biseccion("x**2-2", 1, 2, 1000, 1e-8))
 
-# Caso donde bisección no cumple cambio de signo
-# print(biseccion("x**2+1", -1, 1, 1000, 1e-8))
-
-# Caso donde un valor inicial ya es raíz
-# print(secante("x**2-4", 2, 3, 1000, 1e-8))
 
 
 
 # Metodo de Newton Raphson
-
 
 def newton_raphson(f, x0, iterMax, tol):
     x = sp.symbols("x")
@@ -174,14 +172,10 @@ def newton_raphson(f, x0, iterMax, tol):
     return xk, erk, k, conv
 
 
-# Prueba 
-# print(newton_raphson("x**2-2", 1, 1000, 1e-8))
-
 
 
 
 # Metodo de Steffensen
-
 
 def steffensen(f, x0, iterMax, tol):
     x = sp.symbols("x")
@@ -224,9 +218,6 @@ def steffensen(f, x0, iterMax, tol):
 
     return xk, erk, k, conv
 
-
-# Prueba 
-# print(steffensen("x**2-2", 1, 1000, 1e-8))
 
 
 
@@ -292,9 +283,6 @@ def falsa_posicion(f, a, b, iterMax, tol):
     return float(xk), float(erk), k, conv
 
 
-# prueba falsa_posicion
-# print(falsa_posicion("x**2-2", 1, 2, 1000, 1e-8))
-
 
 
 # Metodo de Muller
@@ -359,4 +347,27 @@ def muller(f, x0, x1, x2, iterMax, tol):
 
     return float(xk), float(erk), k, conv
 
+
+# pruebas biseccion
+# print(biseccion("x**2-2", 1, 2, 1000, 1e-8))
+# Caso donde bisección no cumple cambio de signo
+# print(biseccion("x**2+1", -1, 1, 1000, 1e-8))
+
+
+# pruebas secante
+# print(secante("x**2-2", 1, 2, 1000, 1e-8))
+# Caso donde un valor inicial ya es raíz
+# print(secante("x**2-4", 2, 3, 1000, 1e-8))
+
+# Prueba Newton Raphson
+# print(newton_raphson("x**2-2", 1, 1000, 1e-8))
+
+# Prueba Steffensen
+# print(steffensen("x**2-2", 1, 1000, 1e-8))
+
+# prueba Falsa posicion
+# print(falsa_posicion("x**2-2", 1, 2, 1000, 1e-8))
+
+
+# prueba Muller
 # print(muller("x**2-2", 1, 2, 3, 1000, 1e-8))
