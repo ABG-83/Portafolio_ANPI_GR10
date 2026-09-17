@@ -1,63 +1,123 @@
-
-
 clc;
 clear;
 
-source("parte1.m");
+
+% Metodo de Eliminacion Gaussiana
+
+function x=sol_elim_gauss(A,b)
+
+  n=size(A,1);
+  At=A;
+  bt=b;
+
+  % Eliminacion Gaussiana
+
+  for k=1:n-1
+    for i=k+1:n
+
+      m=At(i,k)/At(k,k);
+
+      for j=k:n
+        At(i,j)=At(i,j)-m*At(k,j);
+      endfor
+
+      bt(i)=bt(i)-m*bt(k);
+
+    endfor
+  endfor
+
+  % Sustitución hacia atrás
+
+  x=zeros(n,1);
+
+  for i=n:-1:1
+
+    aux=0;
+
+    for j=i+1:n
+      aux=aux+At(i,j)*x(j);
+    endfor
+
+    x(i)=(1/At(i,i))*(bt(i)-aux);
+
+  endfor
+
+endfunction
 
 
-% Prueba Eliminacion Gaussiana
+% Método de Thomas
 
-disp(" ")
-disp("Prueba Eliminacion Gaussiana")
+function x=metodo_thomas(A,d)
 
-A=[10 -1 2;
-   -1 11 -1;
-    2 -1 10];
+  b=diag(A);
+  c=diag(A,1);
+  a=diag(A,-1);
+  a=([0 a'])';
 
-b=[6 22 -10].';
+  n=size(A,1);
 
-x_gauss=sol_elim_gauss(A,b)
+  % Calcular vectores p y q
+  p=zeros(n-1,1);
+  q=zeros(n,1);
 
-error_gauss=norm(A*x_gauss-b)
+  p(1)=c(1)/b(1);
+  q(1)=d(1)/b(1);
 
+  for i=2:n-1
 
-% Prueba Thomas
+    aux=b(i)-p(i-1)*a(i);
 
-disp(" ")
-disp("Prueba Thomas")
+    p(i)=c(i)/aux;
+    q(i)=(d(i)-q(i-1)*a(i))/aux;
 
-A=[ 2 -1  0  0;
-   -1  3 -1  0;
-    0 -1  5 -1;
-    0  0 -1  3];
+  endfor
 
-d=[1 1 3 2].';
+  q(n)=(d(n)-q(n-1)*a(n))/(b(n)-p(n-1)*a(n));
 
-x_thomas=metodo_thomas(A,d)
+  % Calcular vector x
+  x=zeros(n,1);
+  x(n)=q(n);
 
-error_thomas=norm(A*x_thomas-d)
+  for i=n-1:-1:1
+    x(i)=q(i)-p(i)*x(i+1);
+  endfor
 
-
-% Prueba Jacobi
-
-disp(" ")
-disp("Prueba Jacobi")
-
-A=[10 -1 2;
-   -1 11 -1;
-    2 -1 10];
-
-b=[6 22 -10].';
-
-x0=[0 0 0].';
-
-tol=1e-10;
-iterMax=1000;
-
-[x_jacobi,erk,k,conv]=metodo_Jacobi(A,b,x0,tol,iterMax)
+endfunction
 
 
+% Método de Jacobi
+
+function [xk,erk,k,conv]=metodo_Jacobi(A,b,x0,tol,iterMax)
+
+  xk=x0;
+
+  d1=diag(A);
+  D=diag(d1);
+  Dinv=diag(1./d1);
+  LmU=A-D;
+
+  cj=Dinv*b;
+  Tj=-Dinv*LmU;
+
+  k=0;
+  erk=norm(A*xk-b,2);
+  conv=0;
+
+  while erk>=tol && k<iterMax
+
+    xk=Tj*xk+cj;
+
+    erk=norm(A*xk-b,2);
+
+    k=k+1;
+
+  endwhile
+
+  if erk<tol
+    conv=1;
+  endif
+
+endfunction
 
 
 % Funciones correspondientes a Persona 2.
