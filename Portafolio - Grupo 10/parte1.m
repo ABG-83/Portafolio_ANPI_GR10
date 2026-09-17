@@ -1,7 +1,4 @@
-clc;
-clear;
-
-
+1;
 % Metodo de Eliminacion Gaussiana
 
 function x=sol_elim_gauss(A,b)
@@ -253,3 +250,91 @@ function x=sust_atras(A,b)
   endfor
 
 endfunction
+
+
+function [x, Q, R] = metodo_QR(A, b)
+
+  % tamaño del sistema
+  n = size(A, 1);
+
+  % matrices Q y R para rellenar
+  Q = zeros(n, n);
+  R = zeros(n, n);
+
+
+  % Factorización QR
+  for j = 1:n
+
+    u = A(:, j); % Seleccionamos la columna j de la matriz A
+
+    % Restamos la proyeccion de a_k sobre los q_j previos
+    % El for no se ejecuta para j = 1, es decir u1 = u = A(:, j)
+    for i = 1:j-1
+      % Producto punto entre la columna original de A y la columna i de Q
+      producto_punto = dot(A(:, j), Q(:, i));
+      u = u - producto_punto * Q(:, i);
+    end
+
+    % Normalizamos el vector u para obtener q_j y agregarlo a Q
+    Q(:, j) = u / norm(u);
+  end
+
+
+  % Calcular la matriz R
+  R = Q' * A;
+
+
+  % Resolver Ax = b
+  % Calculamos c = Q^T * b
+  c = Q' * b;
+
+  % Resolvemos el sistema Rx = c utilizando sustitución hacia atrás
+  x=sust_atras(R,c);
+
+end
+
+
+
+function [xk, erk, k, conv] = gradiente_conjugado(A, b, x0, iterMax, tol)
+
+  xk = x0;
+  rk = b - A * xk;   % residual inicial: cuánto le falta a Ax para llegar a b
+  pk = rk;           % la primera dirección es el propio residual
+
+  k = 0;
+  erk = norm(rk, 2); % error inicial medido con norma 2
+  conv = 0;
+
+  while k < iterMax
+
+    Apk = A * pk;  % se guarda A*pk porque se usa dos veces
+
+    % el tamaño de cuánto se debe avanzar en la dirección pk
+    alpha = (rk' * rk) / (pk' * Apk);
+
+    xk = xk + alpha * pk;  % nueva aproximación
+
+    rk_nuevo = rk - alpha * Apk;
+
+    k = k + 1;
+
+    erk = norm(rk_nuevo, 2);
+
+    if erk < tol
+      conv = 1;
+      rk = rk_nuevo;
+      break;
+    end
+
+    % beta ajusta la nueva dirección para no repetir direcciones anteriores
+    beta = (rk_nuevo' * rk_nuevo) / (rk' * rk);
+
+    % nueva dirección: residual + un poco de la dirección anterior
+    pk = rk_nuevo + beta * pk;
+
+    rk = rk_nuevo;  % se actualiza el residual para la siguiente vuelta
+
+  end
+
+end
+
