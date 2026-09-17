@@ -43,6 +43,44 @@ iterMax=10000;
 tol=1e-8;
 
 
+% -------- Metodos de Persona 1 --------
+
+
+% Eliminacion Gaussiana
+
+tic;
+T_gauss=sol_elim_gauss(A,b);
+tiempo_gauss=toc;
+
+error_gauss=norm(A*T_gauss-b,2);
+
+temperaturas_gauss=[T0;T_gauss;T500];
+pares_gauss=[x temperaturas_gauss];
+
+
+% Metodo de Thomas
+
+tic;
+T_thomas=metodo_thomas(A,b);
+tiempo_thomas=toc;
+
+error_thomas=norm(A*T_thomas-b,2);
+
+temperaturas_thomas=[T0;T_thomas;T500];
+pares_thomas=[x temperaturas_thomas];
+
+
+% Metodo de Jacobi
+
+tic;
+[T_jacobi,erk_jacobi,k_jacobi,conv_jacobi]=metodo_Jacobi(A,b,T_inicial,tol,iterMax);
+tiempo_jacobi=toc;
+
+error_jacobi=norm(A*T_jacobi-b,2);
+
+temperaturas_jacobi=[T0;T_jacobi;T500];
+pares_jacobi=[x temperaturas_jacobi];
+
 % -------- Metodos de Persona 2 --------
 
 % Factorizacion LU
