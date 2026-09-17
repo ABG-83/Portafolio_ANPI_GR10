@@ -1,4 +1,4 @@
-% Responsabilidades: conservar las pruebas existentes y reunir las funciones de la Parte I.
+
 
 clc;
 clear;
