@@ -1,3 +1,5 @@
+
+
 clc;
 clear;
 close all;
@@ -61,14 +63,32 @@ error_jacobi=norm(A*x_jacobi-b,2);
 
 % Factorizacion LU
 
+tic;
+x_lu=sol_LU(A,b);
+tiempo_lu=toc;
+
+error_lu=norm(A*x_lu-b,2);
+
 
 % Cholesky
+
+tic;
+x_cholesky=sol_Cholesky(A,b);
+tiempo_cholesky=toc;
+
+error_cholesky=norm(A*x_cholesky-b,2);
 
 
 % QR
 
 
 % Gauss-Seidel
+
+tic;
+[x_gauss_seidel,erk_gauss_seidel,k_gauss_seidel,conv_gauss_seidel]=metodo_Gauss_Seidel(A,b,x0,tol,iterMax);
+tiempo_gauss_seidel=toc;
+
+error_gauss_seidel=norm(A*x_gauss_seidel-b,2);
 
 
 % Gradiente Conjugado
