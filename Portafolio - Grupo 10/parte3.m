@@ -215,52 +215,72 @@ disp("===================ANALISIS Y DISCUSION FINAL===================")
 
 disp(" ")
 disp("- EQUIVALENCIA DE SOLUCIONES SEGUN EL RESIDUO ||AT - b||_2:")
-disp("Desde el punto de vista del residuo algebraico, todos los metodos producen")
-disp("soluciones equivalentes. Los valores obtenidos se encuentran en el rango de")
-fprintf("%.2e a %.2e. Estos residuos garantizan que todos los metodos lograron\n", min(errores), max(errores));
-disp("despejar el sistema lineal AT = b de forma algebraicamente exacta y acotada")
-disp("por la precision del sistema. Es importante destacar que el residuo mide la")
-disp("fidelidad de la solucion del sistema discreto, no el error frente a la solucion continua.")
+
+% Comparar residuos reales con la escala de b y la tolerancia solicitada
+
+fprintf("Los residuos absolutos estan entre %.8e y %.8e.\n",min(errores),max(errores));
+residuos_relativos=errores/norm(b,2);
+fprintf("Respecto a ||b||_2, estan entre %.8e y %.8e.\n",min(residuos_relativos),max(residuos_relativos));
+disp("Estos valores permiten comparar que tan bien satisface cada aproximacion el sistema discreto.")
+disp("Un residuo pequeno no significa una solucion algebraicamente exacta ni mide el error frente a la solucion continua.")
+disp("La tolerancia es un criterio de parada de los iterativos; los directos no se detienen mediante ese criterio.")
+
+% Contrastar los indicadores retornados con los residuos reales, sin cambiarlos
+
+residuos_iter=[error_jacobi error_gauss_seidel error_cg];
+convergencias_iter=[conv_jacobi conv_gauss_seidel conv_cg];
+for i=1:3
+  cumple_tol=residuos_iter(i)<tol;
+  fprintf("%s: residuo=%.8e, k=%d, conv=%d, cumple residuo < tol: %d.\n",metodos_iter{i},residuos_iter(i),iteraciones_iter(i),convergencias_iter(i),cumple_tol);
+  if convergencias_iter(i)~=cumple_tol
+    disp("El indicador retornado no coincide con el residuo real; requiere revisar ese metodo.")
+  elseif ~cumple_tol && iteraciones_iter(i)==iterMax
+    disp("Se alcanzo el maximo de iteraciones sin satisfacer la tolerancia absoluta.")
+  endif
+endfor
 
 disp(" ")
 disp("- METODOS CON LOS MENORES TIEMPOS DE EJECUCION:")
-fprintf(" - Metodo Directo Mas Rapido: Thomas con %.6f segundos.\n", tiempo_thomas);
-fprintf(" - Metodo Iterativo Mas Rapido: Gradiente Conjugado con %.6f segundos.\n", tiempo_cg);
-fprintf(" - Destaca tambien Cholesky con %.6f segundos frente a LU (%.6f s) o Gauss (%.6f s).\n", tiempo_cholesky, tiempo_lu, tiempo_gauss);
-disp("Los tiempos mas bajos corresponden a los algoritmos capaces de explotar la")
-disp("estructura especifica de la matriz A (tridiagonalidad y simetria definida positiva).")
+
+% Obtener los menores tiempos de esta ejecucion dentro de cada grupo
+
+[menor_directo,indice_directo]=min(tiempos(1:5));
+[menor_iterativo,indice_iterativo]=min(tiempos(6:8));
+fprintf(" - Menor tiempo entre los directos: %s con %.6f segundos.\n",metodos{indice_directo},menor_directo);
+fprintf(" - Menor tiempo entre los iterativos: %s con %.6f segundos.\n",metodos_iter{indice_iterativo},menor_iterativo);
+fprintf(" - Cholesky: %.6f s; LU: %.6f s; Gauss: %.6f s.\n",tiempo_cholesky,tiempo_lu,tiempo_gauss);
+disp("El menor tiempo debe interpretarse junto con el residuo real y el cumplimiento de la tolerancia.")
+disp("Los tiempos dependen del algoritmo, de los bucles o la vectorizacion y del equipo utilizado.")
 
 disp(" ")
 disp("- INFLUENCIA DE LA ESTRUCTURA TRIDIAGONAL SOBRE EL METODO DE THOMAS:")
-disp("La matriz A es tridiagonal rala. El algoritmo de Thomas aprovecha de forma")
-disp("directa esta estructura, reduciendo la complejidad computacional de O(N^3)")
-disp("a O(N). Para N = 499, el numero de operaciones pasa de aproximadamente")
-disp("1.2x10^8 a solo ~2500 multiplicaciones/divisiones, logrando que el tiempo")
-disp("de calculo sea practicamente instantaneo en comparacion con LU o Gauss clasicos.")
+disp("Thomas utiliza las tres diagonales de A y sus recurrencias requieren O(N) operaciones.")
+disp("Gauss y LU, en las implementaciones generales utilizadas, recorren la matriz con costo O(N^3).")
+disp("La estructura tridiagonal favorece a Thomas; la matriz A del programa se almacena como matriz llena.")
 
 disp(" ")
 disp("- VENTAJAS DE CHOLESKY BAJO LAS CONDICIONES DE LA MATRIZ:")
-disp("La matriz A es simetrica (A = A') y strictly dominante por diagonal")
-disp("(|510000| > |-250000| + |-250000|), lo que garantiza teoricamente que A es")
-disp("Simetrica Definida Positiva (SPD). Cholesky aprovecha esto descomponiendo A")
-disp("en L*L', requiriendo solo la mitad de operaciones flotantes y la mitad de")
-disp("memoria respecto a la factorizacion LU. Ademas, la implementacion vectorizada")
-disp("de Octave reduce drasticamente el tiempo de ejecucion.")
+disp("A es simetrica, tiene diagonal positiva y es estrictamente dominante por filas: 510000 > 500000.")
+disp("Estas propiedades garantizan que sea definida positiva y permiten aplicar Cholesky.")
+disp("Cholesky obtiene A=L*L' calculando un solo factor triangular; LU calcula dos factores.")
+disp("Su factorizacion requiere aproximadamente la mitad de operaciones que LU para matrices densas.")
+disp("Esto no implica que el tiempo medido sea exactamente la mitad: aqui Cholesky esta vectorizado y LU usa bucles.")
 
 disp(" ")
 disp("- DIFERENCIAS OBSERVADAS ENTRE JACOBI Y GAUSS-SEIDEL:")
-fprintf("Ambos metodos alcanzaron el limite maximo de %d iteraciones (conv = 0).\n", iterMax);
-disp("En discretizaciones de EDPs por diferencias finitas con mallas finas (N = 499),")
-disp("el radio espectral de las matrices de iteracion es sumamente cercano a 1, lo")
-disp("que genera una convergencia asintotica muy lenta (estancamiento). Sin embargo,")
-fprintf("Gauss-Seidel logro un residuo significativamente menor (%.8e) que Jacobi\n", error_gauss_seidel);
-fprintf("(%.8e), confirmando la teoria de que Gauss-Seidel converge aproximadamente\n", error_jacobi);
-disp("al doble de velocidad por iteracion al utilizar de inmediato los valores nuevos.")
+
+% Comparar iteraciones y tiempos sin deducir una velocidad universal
+
+fprintf("Jacobi: %d iteraciones, %.6f s, residuo %.8e.\n",k_jacobi,tiempo_jacobi,error_jacobi);
+fprintf("Gauss-Seidel: %d iteraciones, %.6f s, residuo %.8e.\n",k_gauss_seidel,tiempo_gauss_seidel,error_gauss_seidel);
+disp("Jacobi utiliza la aproximacion anterior; Gauss-Seidel aprovecha las componentes nuevas mediante sustitucion hacia adelante.")
+disp("El costo por iteracion es distinto: menos iteraciones no garantiza menor tiempo de ejecucion.")
+disp("La dominancia diagonal garantiza convergencia en aritmetica exacta, pero el redondeo puede limitar el residuo alcanzable.")
+disp("Llegar a iterMax no demuestra divergencia ni permite atribuir el resultado solamente a convergencia lenta.")
 
 disp(" ")
 disp("- AJUSTE DE LOS PARES ORDENADOS CON LA SOLUCION EXACTA:")
-disp("Los 501 puntos ordenados (x, T) obtenidos por diferencias finitas siguen de")
-disp("manera exacta la curva continua T(x) = 20 + 30x + 10*sin(pi*x). En la grafica")
-disp("se observa un acople perfecto entre el scatter de los puntos numericos y")
-disp("la solucion analitica. Esto valida la formulacion del sistema AT = b y confirma")
-disp("que el paso de malla h = 1/500 modela con gran precision el problema fisico.")
+disp("La grafica permite corroborar visualmente los 501 puntos de diferencias finitas frente a la curva exacta.")
+disp("En la grafica revisada, los puntos siguen muy de cerca la curva a la escala mostrada.")
+disp("La superposicion visual no demuestra igualdad exacta: existen errores de discretizacion y de redondeo.")
+disp("Las fronteras se fijan en 20 C y 50 C; las 499 temperaturas interiores se obtienen resolviendo AT=b.")
