@@ -40,6 +40,73 @@ def cargar_entrenamiento(carpeta_datos):
     return S, np.array(etiquetas), rutas
 
 
+# Ordena los valores propios y sus vectores correspondientes, elimina los valores numéricamente nulos y calcula \(r\) , despues de recibir qr y jacobi 
+def seleccionar_caras_base(valores, vectores):
+    # Ordenar ambos resultados juntos conserva cada par valor-vector propio.
+    orden = np.argsort(valores)[::-1]
+    valores = np.array(valores, dtype=float)[orden]
+    vectores = np.array(vectores, dtype=float)[:, orden]
+
+    # Evitar construir un modelo sin variación positiva.
+    if valores[0] <= 0:
+        raise ValueError("El mayor valor propio debe ser positivo.")
+
+    # Descartar los valores numéricamente nulos según la guía.
+    conservar = valores > 1e-10 * valores[0]
+    valores = valores[conservar]
+    vectores = vectores[:, conservar]
+    r = len(valores)
+
+    # Las caras base deben tener longitud uno para calcular las proyecciones.
+    normas = np.linalg.norm(vectores, axis=0)
+    if np.any(normas == 0):
+        raise ValueError("Se recibió un vector propio de norma cero.")
+
+    vectores = vectores / normas
+
+    # Elegir el menor número de componentes que conserve al menos el 95 %.
+    variacion_acumulada = np.cumsum(valores) / np.sum(valores)
+    k = int(np.searchsorted(variacion_acumulada, 0.95)) + 1
+    variacion = variacion_acumulada[k - 1]
+    Uk = vectores[:, :k]
+
+    return Uk, r, k, variacion
+
+
+def proyectar_entrenamiento(A, Uk):
+    # Representar cada imagen mediante sus coordenadas en las caras base.
+    X = Uk.T @ A
+    return X
+
+# Identificación de una fotografía
+def identificar_fotografia(ruta, promedio, Uk, X, etiquetas, rutas):
+    # Preparar la consulta exactamente como las imágenes de entrenamiento.
+    with Image.open(ruta) as archivo:
+        imagen = np.array(archivo.convert("L"), dtype=float)
+
+    if imagen.shape != (56, 46):
+        raise ValueError(f"Dimensiones incorrectas en {ruta}")
+
+    imagen = imagen / 255.0
+    f = imagen.reshape(2576, order="F")
+
+    # Utilizar el promedio y las caras base ya calculados con entrenamiento.
+    a = f - promedio
+    x = Uk.T @ a
+
+    # Comparar la consulta con las 360 fotografías en el espacio reducido.
+    diferencias = X - x[:, None]
+    distancias = np.linalg.norm(diferencias, axis=0)
+
+    # argmin devuelve la primera posición si existe un empate exacto.
+    indice = int(np.argmin(distancias))
+    persona_predicha = int(etiquetas[indice])
+    ruta_cercana = rutas[indice]
+    distancia = float(distancias[indice])
+
+    return persona_predicha, ruta_cercana, distancia
+
+
 # -------- Preprocesamiento y visualizacion --------
 def parte3():
     # Buscar el dataset junto al script, independientemente de la terminal.
