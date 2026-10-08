@@ -1,7 +1,6 @@
-# Responsabilidades: cargar el dataset facial, preparar los datos de entrenamiento
-# y presentar las comprobaciones y figuras del preprocesamiento.
 
-# -------- Importaciones --------
+
+#  Importaciones 
 from pathlib import Path
 
 import numpy as np
@@ -9,7 +8,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 
-# -------- Carga del entrenamiento --------
+#  Carga del entrenamiento 
 def cargar_entrenamiento(carpeta_datos):
     # Mantener el orden numérico permite asociar cada imagen con su persona.
     S = np.zeros((2576, 360), dtype=float)
@@ -107,7 +106,7 @@ def identificar_fotografia(ruta, promedio, Uk, X, etiquetas, rutas):
     return persona_predicha, ruta_cercana, distancia
 
 
-# -------- Preprocesamiento y visualizacion --------
+#  Preprocesamiento y visualizacion 
 def parte3():
     # Buscar el dataset junto al script, independientemente de la terminal.
     carpeta_programa = Path(__file__).resolve().parent
