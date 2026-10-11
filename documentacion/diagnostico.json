@@ -1,0 +1,28 @@
+{
+  "metodo": "Jacobi",
+  "iterMax": 1000000,
+  "tol": 1e-05,
+  "error": 2.4636499101798673e-08,
+  "iteraciones": 9,
+  "conv": 1,
+  "tiempo": 3353.4784699000884,
+  "r": 359,
+  "k": 129,
+  "variacion": 0.9500743277170408,
+  "residuo_maximo": 4.025927019103345e-09,
+  "residuo_relativo": 7.237987993455527e-13,
+  "ortogonalidad": 6.465629039345759e-13,
+  "error_normas": 2.220446049250313e-16,
+  "error_centrado": 1.4802973661668753e-16,
+  "error_reconstruccion": 0.0,
+  "intensidad_minima": 0.0196078431372549,
+  "intensidad_maxima": 0.9176470588235294,
+  "dimensiones_S": [
+    2576,
+    360
+  ],
+  "dimensiones_G": [
+    2576,
+    2576
+  ]
+}

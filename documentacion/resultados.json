@@ -1,0 +1,365 @@
+{
+  "metodo": "Jacobi",
+  "iterMax": 1000000,
+  "tol": 1e-05,
+  "error": 2.4636499101798673e-08,
+  "iteraciones": 9,
+  "conv": 1,
+  "tiempo": 3353.4784699000884,
+  "r": 359,
+  "k": 129,
+  "variacion": 0.9500743277170408,
+  "residuo_maximo": 4.025927019103345e-09,
+  "residuo_relativo": 7.237987993455527e-13,
+  "ortogonalidad": 6.465629039345759e-13,
+  "error_normas": 2.220446049250313e-16,
+  "error_centrado": 1.4802973661668753e-16,
+  "error_reconstruccion": 0.0,
+  "intensidad_minima": 0.0196078431372549,
+  "intensidad_maxima": 0.9176470588235294,
+  "dimensiones_S": [
+    2576,
+    360
+  ],
+  "dimensiones_G": [
+    2576,
+    2576
+  ],
+  "dimensiones_vectores": [
+    2576,
+    2576
+  ],
+  "dimensiones_Uk": [
+    2576,
+    129
+  ],
+  "dimensiones_X": [
+    129,
+    360
+  ],
+  "variacion_anterior": 0.9494904164429134,
+  "aciertos": 38,
+  "exactitud": 95.0,
+  "predicciones": [
+    {
+      "archivo": "s1/10.png",
+      "real": 1,
+      "predicha": 1,
+      "correcta": true,
+      "cercana": "s1/5.png",
+      "distancia": 6.28668730131971
+    },
+    {
+      "archivo": "s2/10.png",
+      "real": 2,
+      "predicha": 2,
+      "correcta": true,
+      "cercana": "s2/7.png",
+      "distancia": 2.891694934375383
+    },
+    {
+      "archivo": "s3/10.png",
+      "real": 3,
+      "predicha": 3,
+      "correcta": true,
+      "cercana": "s3/9.png",
+      "distancia": 2.595851868780997
+    },
+    {
+      "archivo": "s4/10.png",
+      "real": 4,
+      "predicha": 4,
+      "correcta": true,
+      "cercana": "s4/5.png",
+      "distancia": 3.4740453462444485
+    },
+    {
+      "archivo": "s5/10.png",
+      "real": 5,
+      "predicha": 40,
+      "correcta": false,
+      "cercana": "s40/5.png",
+      "distancia": 4.201564630893994
+    },
+    {
+      "archivo": "s6/10.png",
+      "real": 6,
+      "predicha": 6,
+      "correcta": true,
+      "cercana": "s6/4.png",
+      "distancia": 1.7222637071563363
+    },
+    {
+      "archivo": "s7/10.png",
+      "real": 7,
+      "predicha": 7,
+      "correcta": true,
+      "cercana": "s7/5.png",
+      "distancia": 3.9287042839782327
+    },
+    {
+      "archivo": "s8/10.png",
+      "real": 8,
+      "predicha": 8,
+      "correcta": true,
+      "cercana": "s8/3.png",
+      "distancia": 3.397460124909769
+    },
+    {
+      "archivo": "s9/10.png",
+      "real": 9,
+      "predicha": 9,
+      "correcta": true,
+      "cercana": "s9/5.png",
+      "distancia": 4.263882769798528
+    },
+    {
+      "archivo": "s10/10.png",
+      "real": 10,
+      "predicha": 38,
+      "correcta": false,
+      "cercana": "s38/4.png",
+      "distancia": 6.609280062234725
+    },
+    {
+      "archivo": "s11/10.png",
+      "real": 11,
+      "predicha": 11,
+      "correcta": true,
+      "cercana": "s11/1.png",
+      "distancia": 3.7370297645328012
+    },
+    {
+      "archivo": "s12/10.png",
+      "real": 12,
+      "predicha": 12,
+      "correcta": true,
+      "cercana": "s12/9.png",
+      "distancia": 3.005648122665566
+    },
+    {
+      "archivo": "s13/10.png",
+      "real": 13,
+      "predicha": 13,
+      "correcta": true,
+      "cercana": "s13/5.png",
+      "distancia": 1.836341284580228
+    },
+    {
+      "archivo": "s14/10.png",
+      "real": 14,
+      "predicha": 14,
+      "correcta": true,
+      "cercana": "s14/9.png",
+      "distancia": 5.556180836245913
+    },
+    {
+      "archivo": "s15/10.png",
+      "real": 15,
+      "predicha": 15,
+      "correcta": true,
+      "cercana": "s15/5.png",
+      "distancia": 2.472929832429094
+    },
+    {
+      "archivo": "s16/10.png",
+      "real": 16,
+      "predicha": 16,
+      "correcta": true,
+      "cercana": "s16/3.png",
+      "distancia": 4.118048123014054
+    },
+    {
+      "archivo": "s17/10.png",
+      "real": 17,
+      "predicha": 17,
+      "correcta": true,
+      "cercana": "s17/7.png",
+      "distancia": 2.7185598819041012
+    },
+    {
+      "archivo": "s18/10.png",
+      "real": 18,
+      "predicha": 18,
+      "correcta": true,
+      "cercana": "s18/8.png",
+      "distancia": 3.9407637910461797
+    },
+    {
+      "archivo": "s19/10.png",
+      "real": 19,
+      "predicha": 19,
+      "correcta": true,
+      "cercana": "s19/1.png",
+      "distancia": 3.272682100412162
+    },
+    {
+      "archivo": "s20/10.png",
+      "real": 20,
+      "predicha": 20,
+      "correcta": true,
+      "cercana": "s20/2.png",
+      "distancia": 2.53270905236769
+    },
+    {
+      "archivo": "s21/10.png",
+      "real": 21,
+      "predicha": 21,
+      "correcta": true,
+      "cercana": "s21/8.png",
+      "distancia": 2.662714632339378
+    },
+    {
+      "archivo": "s22/10.png",
+      "real": 22,
+      "predicha": 22,
+      "correcta": true,
+      "cercana": "s22/2.png",
+      "distancia": 2.631358576988759
+    },
+    {
+      "archivo": "s23/10.png",
+      "real": 23,
+      "predicha": 23,
+      "correcta": true,
+      "cercana": "s23/1.png",
+      "distancia": 2.9976172141551336
+    },
+    {
+      "archivo": "s24/10.png",
+      "real": 24,
+      "predicha": 24,
+      "correcta": true,
+      "cercana": "s24/9.png",
+      "distancia": 3.086915930507607
+    },
+    {
+      "archivo": "s25/10.png",
+      "real": 25,
+      "predicha": 25,
+      "correcta": true,
+      "cercana": "s25/3.png",
+      "distancia": 2.648852098767896
+    },
+    {
+      "archivo": "s26/10.png",
+      "real": 26,
+      "predicha": 26,
+      "correcta": true,
+      "cercana": "s26/8.png",
+      "distancia": 1.6512652512354988
+    },
+    {
+      "archivo": "s27/10.png",
+      "real": 27,
+      "predicha": 27,
+      "correcta": true,
+      "cercana": "s27/1.png",
+      "distancia": 3.7879809531893254
+    },
+    {
+      "archivo": "s28/10.png",
+      "real": 28,
+      "predicha": 28,
+      "correcta": true,
+      "cercana": "s28/3.png",
+      "distancia": 4.615308992756248
+    },
+    {
+      "archivo": "s29/10.png",
+      "real": 29,
+      "predicha": 29,
+      "correcta": true,
+      "cercana": "s29/3.png",
+      "distancia": 3.613722279011619
+    },
+    {
+      "archivo": "s30/10.png",
+      "real": 30,
+      "predicha": 30,
+      "correcta": true,
+      "cercana": "s30/1.png",
+      "distancia": 2.614423239595985
+    },
+    {
+      "archivo": "s31/10.png",
+      "real": 31,
+      "predicha": 31,
+      "correcta": true,
+      "cercana": "s31/5.png",
+      "distancia": 3.1795489976126774
+    },
+    {
+      "archivo": "s32/10.png",
+      "real": 32,
+      "predicha": 32,
+      "correcta": true,
+      "cercana": "s32/6.png",
+      "distancia": 3.226480095937152
+    },
+    {
+      "archivo": "s33/10.png",
+      "real": 33,
+      "predicha": 33,
+      "correcta": true,
+      "cercana": "s33/2.png",
+      "distancia": 1.055968460914792
+    },
+    {
+      "archivo": "s34/10.png",
+      "real": 34,
+      "predicha": 34,
+      "correcta": true,
+      "cercana": "s34/9.png",
+      "distancia": 1.7169522471946101
+    },
+    {
+      "archivo": "s35/10.png",
+      "real": 35,
+      "predicha": 35,
+      "correcta": true,
+      "cercana": "s35/5.png",
+      "distancia": 4.911407733251621
+    },
+    {
+      "archivo": "s36/10.png",
+      "real": 36,
+      "predicha": 36,
+      "correcta": true,
+      "cercana": "s36/6.png",
+      "distancia": 5.417337380318964
+    },
+    {
+      "archivo": "s37/10.png",
+      "real": 37,
+      "predicha": 37,
+      "correcta": true,
+      "cercana": "s37/9.png",
+      "distancia": 2.6859801649410895
+    },
+    {
+      "archivo": "s38/10.png",
+      "real": 38,
+      "predicha": 38,
+      "correcta": true,
+      "cercana": "s38/5.png",
+      "distancia": 2.4442823338353343
+    },
+    {
+      "archivo": "s39/10.png",
+      "real": 39,
+      "predicha": 39,
+      "correcta": true,
+      "cercana": "s39/6.png",
+      "distancia": 4.27077106804774
+    },
+    {
+      "archivo": "s40/10.png",
+      "real": 40,
+      "predicha": 40,
+      "correcta": true,
+      "cercana": "s40/4.png",
+      "distancia": 4.250126150929642
+    }
+  ]
+}

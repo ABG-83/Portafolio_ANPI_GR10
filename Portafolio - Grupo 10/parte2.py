@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from parte1 import metodo_qr
-# from parte1 import metodo_jacobi
+from parte1 import metodo_jacobi
 
 
 def construir_matriz(n):
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     # Métodos a comparar
     metodos = [
         ("QR", metodo_qr),
-        # ("Jacobi", metodo_jacobi),
+        ("Jacobi", metodo_jacobi),
     ]
 
     # Ejecutar métodos

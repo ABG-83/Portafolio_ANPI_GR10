@@ -1,3 +1,4 @@
+import time
 import numpy as np
 
 
@@ -54,7 +55,7 @@ def metodo_qr(A, iterMax, tol):
     return lambdas, Vk, erk, k, con
 
 
-def metodo_jacobi(A, iterMax, tol):
+def metodo_jacobi(A, iterMax, tol, mostrar_progreso=False):
 
     # Copia de la matriz para no modificar la matriz original
     Ak = np.array(A, dtype=float, copy=True)
@@ -74,8 +75,15 @@ def metodo_jacobi(A, iterMax, tol):
     conv = 0
     k = 0
 
-    # Iteraciones principales
+    # Medir el progreso sin cambiar las rotaciones ni la parada.
+    total_pares = n * (n - 1) // 2
+    inicio_metodo = time.perf_counter()
     for k in range(1, iterMax + 1):
+        inicio_barrido = time.perf_counter()
+        siguiente_aviso = 0.1
+        if mostrar_progreso:
+            error_previo = f"{erk:.6e}" if k > 1 else "aun no calculado"
+            print(f"Barrido {k}: inicio; error previo {error_previo}; tol {tol:.1e}", flush=True)
 
         for p in range(n - 1):
 
@@ -120,6 +128,18 @@ def metodo_jacobi(A, iterMax, tol):
                 Vk[:, q] = -s * vector_p + c * vector_q
 
 
+            # La estimacion corresponde al barrido actual, no al tiempo hasta converger.
+            if mostrar_progreso:
+                pares_recorridos = (p + 1) * (2 * n - p - 2) // 2
+                fraccion = pares_recorridos / total_pares
+                if fraccion >= siguiente_aviso or p == n - 2:
+                    transcurrido = time.perf_counter() - inicio_barrido
+                    restante = transcurrido * (1 - fraccion) / fraccion
+                    print(f"Barrido {k}: {fraccion:.1%} de pares recorridos; "
+                          f"{transcurrido:.1f} s; restante estimado del barrido "
+                          f"{restante:.1f} s", flush=True)
+                    siguiente_aviso += 0.1
+
         # Aproximaciones de los valores propios
 
         lambdas_nuevos = np.sort(np.diag(Ak))[::-1]
@@ -130,6 +150,10 @@ def metodo_jacobi(A, iterMax, tol):
         )
 
         lambdas_prev = lambdas_nuevos
+        # Mostrar el error permite compararlo con la tolerancia exigida.
+        if mostrar_progreso:
+            print(f"Barrido {k} terminado: error {erk:.6e}; tol {tol:.1e}; "
+                  f"tiempo total {time.perf_counter()-inicio_metodo:.1f} s", flush=True)
 
         # Criterio de parada
         if erk < tol:

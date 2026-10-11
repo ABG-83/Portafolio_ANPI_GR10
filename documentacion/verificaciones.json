@@ -1,0 +1,11 @@
+{
+  "verificaciones": "aprobadas",
+  "residuo_maximo": 4.02592703680115e-09,
+  "ortogonalidad": 6.465629039345771e-13,
+  "r": 359,
+  "k": 129,
+  "variacion": 0.9500743277170408,
+  "variacion_anterior": 0.9494904164429134,
+  "aciertos": 38,
+  "exactitud": 95.0
+}
