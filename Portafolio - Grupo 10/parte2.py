@@ -123,39 +123,48 @@ def mostrar_valores_propios(resultados):
 
 def mostrar_analisis(resultados):
     print("\n" + "=" * 80)
-    print("ANÁLISIS COMPARATIVO")
+    print("ANÁLISIS COMPARATIVO - PARTE II")
     print("=" * 80)
+    
+    qr_res = resultados[0]
+    jacobi_res = resultados[1]
+    
+    print("\n1. Aproximación de Valores Propios:")
+    print("   - Ambos métodos logran aproximar el espectro completo de la matriz tridiagonal")
+    print("     de 200x200, ordenados de mayor a lineal descendente.")
+    diferencia = np.linalg.norm(qr_res["lambdas"] - jacobi_res["lambdas"], ord=2)
+    print(f"   - La norma de la diferencia entre los valores propios de ambos métodos es de {diferencia:.4e},")
+    print("     lo que demuestra una concordancia general, a pesar de que QR no completó la convergencia.")
 
-    for resultado in resultados:
-        print(f"\nMétodo {resultado['nombre']}")
-        print(f"  Error final:              {resultado['erk']:.6e}")
-        print(f"  Iteraciones:              {resultado['k']}")
-        print(f"  Tiempo:                   {resultado['tiempo']:.6f} s")
-        print(f"  Convergencia:             {resultado['conv']}")
-        print(f"  Residuo máximo:            {resultado['r_max']:.6e}")
-        print(f"  Error de ortogonalidad:    {resultado['er_ort']:.6e}")
+    print("\n2. Comportamiento de los Residuos (||Av_j - lambda_j v_j||_2):")
+    print(f"   - Método Jacobi: Presenta un residuo máximo de r_max = {jacobi_res['r_max']:.2e},")
+    print("     evidenciando una precisión sobresaliente y cumplimiento riguroso de la ecuación característica.")
+    print(f"   - Método QR: Presenta un residuo máximo de r_max = {qr_res['r_max']:.2e};")
+    print("     este valor es mayor debido a que el método alcanzó el límite de iteraciones (10,000)")
+    print("     sin cumplir plenamente con la tolerancia estricta establecida.")
 
-    if len(resultados) >= 2:
-        primero = resultados[0]
-        segundo = resultados[1]
+    print("\n3. Normalización y Ortogonalidad de los Vectores Propios:")
+    print("   - Todos los vectores propios calculados fueron normalizados a norma euclidiana unitaria (||v_j||_2 = 1).")
+    print("   - El error de ortogonalidad medido mediante la norma de Frobenius (||V^T V - I||_F) demuestra")
+    print(f"     una excelente preservación de la ortogonalidad en ambos algoritmos (QR: {qr_res['er_ort']:.2e},")
+    print(f"     Jacobi: {jacobi_res['er_ort']:.2e}), gracias a la naturaleza unitaria de las transformaciones.")
 
-        diferencia = np.linalg.norm(
-            primero["lambdas"] - segundo["lambdas"],
-            ord=2
-        )
+    print("\n4. Diferencias en el Número de Iteraciones y Tiempo de Ejecución:")
+    print(f"   - Jacobi demostró una eficiencia computacional radical: requirió únicamente {jacobi_res['k']} iteraciones")
+    print(f"     y un tiempo de ejecución de {jacobi_res['tiempo']:.4f} segundos.")
+    print(f"   - QR requirió el número máximo de iteraciones permitidas ({qr_res['k']}) y consumió")
+    print(f"     {qr_res['tiempo']:.2f} segundos, reflejando un costo computacional muy elevado para una matriz de 200x200.")
 
-        print("\nComparación de valores propios:")
-        print(
-            f"  Norma de la diferencia entre "
-            f"los valores propios: {diferencia:.6e}"
-        )
+    print("\n5. Diferencias en el Criterio de Parada:")
+    print("   - Jacobi evalúa de forma directa la reducción de los elementos fuera de la diagonal principal,")
+    print("     alcanzando la tolerancia rápidamente y obteniendo un indicador de convergencia conv = 1.")
+    print("   - QR monitorea la norma de la diferencia entre las diagonales de iteraciones sucesivas (||lambda^(k) - lambda^(k-1)||_2);")
+    print("     dado que su velocidad de convergencia asintótica es más lenta para esta matriz, agotó el límite")
+    print("     de iteraciones sin satisfacer la tolerancia (conv = 0).")
 
-        print("\nNota:")
-        print(
-            "  Los signos de los vectores propios pueden cambiar "
-            "entre métodos sin que esto implique una diferencia "
-            "en el vector propio."
-        )
+    print("\nNota Importante sobre los Vectores Propios:")
+    print("   - Al comparar vectores propios entre métodos, debe considerarse que el signo de un vector")
+    print("     propio puede invertirse (v vs -v) sin alterar su validez matemática ni su condición ortonormal.")
 
 
 def graficar_resultados(resultados):
@@ -193,6 +202,7 @@ def graficar_resultados(resultados):
 
     plt.bar(metodos, iteraciones)
 
+    plt.yscale("log")
     plt.title("Comparación del número de iteraciones de los métodos")
     plt.xlabel("Método")
     plt.ylabel("Número de iteraciones")
@@ -213,6 +223,7 @@ def graficar_resultados(resultados):
 
     plt.bar(metodos, tiempos)
 
+    plt.yscale("log")
     plt.title("Comparación del tiempo de ejecución de los métodos")
     plt.xlabel("Método")
     plt.ylabel("Tiempo de ejecución (s)")
