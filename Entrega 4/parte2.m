@@ -42,6 +42,15 @@ if ~conv_imp
 end
 T_imp = U_imp + 20;
 
+
+tic;
+[x_cn,t_cn,U_cn,residuos_cn,conv_cn] = crank_nicolson(L,alpha,u0,M,dt,tf);
+tiempo_cn = toc;
+if ~conv_cn
+    error('Se detuvo el experimento base de Crank-Nicolson.');
+end
+  T_cn = U_cn + 20;
+
 % Verificar estabilidad
 fprintf('\nEuler explicito\n');
 fprintf('mu = %.4f\n',mu);
@@ -79,12 +88,21 @@ for n = 1:length(t_imp)
 end
 residuo_max_imp = max(residuos_imp);
 
+
+E_f_cn = max(abs(T_cn(end,:) - T_exacta(x_cn,tf)));
+E_malla_cn = 0;
+for n = 1:length(t_cn)
+    E_malla_cn = max(E_malla_cn,max(abs(T_cn(n,:) - T_exacta(x_cn,t_cn(n)))));
+end
+residuo_max_cn = max(residuos_cn);
+
 % Resultados
 fprintf('\n');
 fprintf('%-18s %-14s %-14s %-12s %-14s %-14s %-14s\n','Metodo','E_f','E_malla','Tiempo(s)','Residuo max','Iter. acum.','Iter. max');
 fprintf('%-18s %-14.6e %-14.6e %-12.6f %-14s %-14s %-14s\n','Euler explicito',E_f_exp,E_malla_exp,tiempo_exp,'no aplica','no aplica','no aplica');
 fprintf('%-18s %-14.6e %-14.6e %-12.6f %-14.6e %-14s %-14s\n','Euler implicito',E_f_imp,E_malla_imp,tiempo_imp,residuo_max_imp,'no aplica','no aplica');
-fprintf('Euler implicito: Thomas con factorizacion reutilizada; todos los residuos < 1e-10.\n');
+fprintf('%-18s %-14.6e %-14.6e %-12.6f %-14.6e %-14s %-14s\n','Crank-Nicolson',E_f_cn,E_malla_cn,tiempo_cn,residuo_max_cn,'no aplica','no aplica');
+fprintf('Euler implicito y Crank-Nicolson: Thomas con factorizacion reutilizada; todos los residuos < 1e-10.\n');
 
 % Reservar una franja inferior para una leyenda compartida de los cuatro perfiles.
 tiempos_perfiles = [0,1,5,10];
@@ -198,13 +216,13 @@ for k = 1:length(tiempos_perfiles)
     indice = round(tk/dt) + 1;
     eje_perfil = axes('position',posiciones_perfiles(k,:));
     curvas_euler = plot(x_exp,T_exp(indice,:),'o-',x_imp,T_imp(indice,:),'s-', ...
-         x_imp,T_exacta(x_imp,tk),'-','LineWidth',1.2,'MarkerSize',4);
+         x_cn,T_cn(indice,:),'^-', x_imp,T_exacta(x_imp,tk),'-','LineWidth',1.2,'MarkerSize',4);
     xlabel('x (m)');
     ylabel('T (C)');
     title(sprintf('t = %.1f s',tk));
     grid on;
 end
-leyenda_euler = legend(curvas_euler,{'Euler explicito','Euler implicito','Solucion exacta'}, ...
+leyenda_euler = legend(curvas_euler,{'Euler explicito','Euler implicito','Crank-Nicolson','Solucion exacta'}, ...
     'location','southoutside','orientation','horizontal','fontsize',10,'box','off');
 set(leyenda_euler,'units','normalized','position',[0.14,0.025,0.72,0.07]);
 set(eje_perfil,'position',posiciones_perfiles(end,:));
@@ -214,12 +232,12 @@ print('perfiles_comparacion_euler.png','-dpng','-r150');
 figure('position',[80,80,1400,700],'paperunits','inches', ...
        'paperposition',[0,0,14,7],'paperpositionmode','manual');
 eje_errores = axes('position',[0.08,0.26,0.37,0.62]);
-semilogy(1:2,[E_f_exp,E_f_imp],'o-','LineWidth',1.5,'MarkerSize',7);
+semilogy(1:3,[E_f_exp,E_f_imp,E_f_cn], 'o-','LineWidth',1.5,'MarkerSize',7);
 hold on;
-semilogy(1:2,[E_malla_exp,E_malla_imp],'x--','LineWidth',1.5,'MarkerSize',9);
-set(eje_errores,'xtick',1:2,'xticklabel',{'Euler explicito','Euler implicito'}, ...
+semilogy(1:3,[E_malla_exp,E_malla_imp,E_malla_cn],'x--','LineWidth',1.5,'MarkerSize',9);
+set(eje_errores,'xtick',1:3,'xticklabel',{'Euler explicito','Euler implicito','Crank-Nicolson'}, ...
     'yminorgrid','off','xminorgrid','off');
-xlim([0.75,2.25]);
+xlim([0.75,3.25]);
 ylabel('Error maximo (C)');
 title('Errores del experimento base');
 grid on;
@@ -231,10 +249,10 @@ set(eje_errores,'position',[0.08,0.26,0.37,0.62]);
 
 % Usar la misma representacion para comparar tiempos sin barras invertidas.
 eje_tiempos = axes('position',[0.59,0.26,0.37,0.62]);
-semilogy(1:2,[tiempo_exp,tiempo_imp],'o-','LineWidth',1.5,'MarkerSize',7);
-set(eje_tiempos,'xtick',1:2,'xticklabel',{'Euler explicito','Euler implicito'}, ...
+semilogy(1:3,[tiempo_exp,tiempo_imp,tiempo_cn],'o-','LineWidth',1.5,'MarkerSize',7);
+set(eje_tiempos,'xtick',1:3,'xticklabel',{'Euler explicito','Euler implicito','Crank-Nicolson'}, ...
     'yminorgrid','off','xminorgrid','off');
-xlim([0.75,2.25]);
+xlim([0.75,3.25]);
 ylabel('Tiempo (s)');
 title('Tiempo del procedimiento numerico');
 grid on;
@@ -451,3 +469,105 @@ if archivo_ref == -1
 end
 fprintf(archivo_ref,'%s',analisis_ref);
 fclose(archivo_ref);
+
+
+
+% ===== experimento final=====
+tf_f = 30;
+umbral = 30;
+
+tic;
+[x_f,t_f,U_f,res_f,conv_f] = crank_nicolson(L,alpha,u0,M,dt,tf_f);
+tiempo_f = toc;
+if ~conv_f
+    error('Se detuvo el experimento final de Crank-Nicolson.');
+end
+T_f = U_f + 20;
+
+% Punto 10
+Tmax_f = max(T_f,[],2);
+n_cruce = find(Tmax_f <= umbral,1);
+if isempty(n_cruce) || n_cruce == 1
+    error('El umbral no se alcanza dentro de (0, tf] o ya se cumple en t = 0.');
+end
+t_num = t_f(n_cruce);
+Tmax_cruce = Tmax_f(n_cruce);
+t_previo = t_f(n_cruce-1);
+Tmax_previo = Tmax_f(n_cruce-1);
+[~,i_max] = max(T_f(n_cruce,:));
+
+% Punto 11
+t_star = log(80/(umbral-20))/(alpha*(pi/L)^2);
+n_exacto = ceil(t_star/dt - 1e-9);
+t_malla_exacto = n_exacto*dt;
+error_redondeo = t_malla_exacto - t_star;
+error_esquema = t_num - t_malla_exacto;
+error_total = t_num - t_star;
+
+fprintf('\n=== Experimento final (Crank-Nicolson, M = %d, dt = %.3f s, tf = %d s) ===\n',M,dt,tf_f);
+fprintf('Residuo normalizado maximo: %.3e, tiempo: %.4f s\n',max(res_f),tiempo_f);
+fprintf('Primer tiempo con max T <= %d C: t = %.2f s (n = %d), max T = %.6f C, en x = %.2f m\n', ...
+        umbral,t_num,n_cruce-1,Tmax_cruce,x_f(i_max));
+fprintf('Paso anterior: t = %.2f s, max T = %.6f C (> %d C)\n',t_previo,Tmax_previo,umbral);
+fprintf('Instante exacto t* = ln(8)/(alpha*(pi/L)^2) = %.6f s\n',t_star);
+fprintf('Primer tiempo de la malla con la solucion exacta: %.2f s\n',t_malla_exacto);
+fprintf('Numerico - exacto: %.6f s = redondeo (%.6f s) + esquema (%.6f s)\n', ...
+        error_total,error_redondeo,error_esquema);
+
+% Punto 12: mapa de calor
+figure('position',[80,80,1000,700],'paperunits','inches', ...
+       'paperposition',[0,0,10,7],'paperpositionmode','manual');
+imagesc(x_f,t_f,T_f);
+set(gca,'YDir','normal');
+xlabel('Posicion x (m)');
+ylabel('Tiempo t (s)');
+title('Mapa de calor de T(x,t), Crank-Nicolson');
+barra = colorbar();
+try
+    ylabel(barra,'Temperatura (C)');
+catch
+    title(barra,'T (C)');
+end
+hold on;
+plot([0,L],[t_num,t_num],'w--','LineWidth',1.5);
+text(0.03*L,t_num+0.8,sprintf('t = %.2f s: max T <= 30 C',t_num),'color','w','fontsize',10);
+print('mapa_calor_enfriamiento.png','-dpng','-r150');
+
+% Punto 12: temperatura en el centro
+ic = round(M/2) + 1;                           % x = L/2 (M par)
+figure('position',[80,80,1100,700],'paperunits','inches', ...
+       'paperposition',[0,0,11,7],'paperpositionmode','manual');
+curva_c = plot(t_f,T_f(:,ic),'-','LineWidth',1.6);
+hold on;
+curva_ex = plot(t_f,T_exacta(x_f(ic),t_f),'k--','LineWidth',1.2);
+curva_u = plot([0,tf_f],[umbral,umbral],'r:','LineWidth',1.5);
+curva_t = plot(t_num,Tmax_cruce,'ro','MarkerSize',7,'MarkerFaceColor','r');
+xlabel('Tiempo t (s)');
+ylabel('T(L/2,t) (C)');
+title('Temperatura en el centro de la barra');
+grid on;
+legend([curva_c,curva_ex,curva_u,curva_t], ...
+    {'Crank-Nicolson','Solucion exacta','Umbral 30 C', ...
+     sprintf('Primer t con max T <= 30 C (%.2f s)',t_num)}, ...
+    'location','northeast','fontsize',10);
+drawnow;
+print('temperatura_centro.png','-dpng','-r150');
+
+% ===== Resumen final en la ventana de comandos =====
+fprintf('\n=== Tabla comparativa final (M = %d, dt = %.2f s, tf = %d s) ===\n',M,dt,tf);
+fprintf('%-18s %-14s %-14s %-12s %-14s %-14s %-14s\n','Metodo','E_f','E_malla','Tiempo(s)','Residuo max','Iter. acum.','Iter. max');
+fprintf('%-18s %-14.6e %-14.6e %-12.6f %-14s %-14s %-14s\n','Euler explicito',E_f_exp,E_malla_exp,tiempo_exp,'no aplica','no aplica','no aplica');
+fprintf('%-18s %-14.6e %-14.6e %-12.6f %-14.6e %-14s %-14s\n','Euler implicito',E_f_imp,E_malla_imp,tiempo_imp,residuo_max_imp,'no aplica','no aplica');
+fprintf('%-18s %-14.6e %-14.6e %-12.6f %-14.6e %-14s %-14s\n','Crank-Nicolson',E_f_cn,E_malla_cn,tiempo_cn,residuo_max_cn,'no aplica','no aplica');
+
+fprintf('\n=== Resumen del analisis ===\n');
+fprintf('1. Precision: con M = 50 y mu = %.2f domina el error espacial O(dx^2). En Euler explicito el error\n',mu);
+fprintf('   temporal tiene signo opuesto y compensa parte del espacial: E_f = %.2e (EE), %.2e (CN), %.2e (EI).\n',E_f_exp,E_f_cn,E_f_imp);
+fprintf('2. Costo: Euler explicito no resuelve sistemas; los implicitos usan Thomas, O(M) por paso, con A factorizada una vez.\n');
+fprintf('3. Estabilidad: Euler explicito exige mu <= 1/2 (con mu = 0.6 crece la perturbacion); EI y CN son estables\n');
+fprintf('   para todo mu, pero estabilidad no implica precision.\n');
+fprintf('4. Residuos: maximo %.2e (EI) y %.2e (CN), muy por debajo de 1e-10; Thomas es directo (sin iteraciones).\n',residuo_max_imp,residuo_max_cn);
+fprintf('5. Enfriamiento: la temperatura maxima esta en x = L/2 y decae como exp(-alpha*(pi/L)^2*t); max T <= 30 C en\n');
+fprintf('   t = %.2f s (exacto %.4f s; diferencia %.4f s = redondeo %.4f + esquema %.4f).\n',t_num,t_star,error_total,error_redondeo,error_esquema);
+fprintf('6. Fisica: el aislamiento lateral deja salir el calor solo por los extremos, fijos a 20 C (Dirichlet);\n');
+fprintf('   la barra tiende a 20 C uniforme y el perfil conserva la forma senoidal mientras decae.\n');

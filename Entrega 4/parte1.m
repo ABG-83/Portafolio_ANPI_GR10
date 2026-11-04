@@ -38,7 +38,7 @@ function [x, t, U] = euler_explicito(L, alpha, u0, M, dt, tf)
 end
 
 
-% Persona 2: separar la factorizacion permite reutilizarla en todos los pasos.
+% separar la factorizacion permite reutilizarla en todos los pasos.
 function [multiplicadores, diagonal, superior] = factorizar_thomas(A)
 
     % Extraer las tres diagonales evita una eliminacion sobre la matriz completa.
@@ -110,6 +110,56 @@ function [x, t, U, residuos, conv] = euler_implicito(L, alpha, u0, M, dt, tf)
         if ~(residuos(n) < tol)
             conv = 0;
             warning('Euler implicito: fallo del sistema en el paso %d (t = %.6f s).',n,t(n+1));
+            U = U(1:n,:);
+            t = t(1:n);
+            residuos = residuos(1:n);
+            return;
+        end
+        u = u_nuevo;
+        U(n+1,2:M) = u';
+    end
+
+end
+
+
+
+% Crank-Nicolson
+function [x, t, U, residuos, conv] = crank_nicolson(L, alpha, u0, M, dt, tf)
+
+    dx = L/M;
+    N = round(tf/dt);
+    mu = alpha*dt/dx^2;
+    x = (0:M)*dx;
+    t = (0:N)*dt;
+    tol = 1e-10;
+
+    % A_C: tridiagonal, simetrica, definida positiva (diagonal 1+mu, secundarias -mu/2).
+    A = (1 + mu)*eye(M-1);
+    if M > 2
+        secundaria = -(mu/2)*ones(M-2,1);
+        A = A + diag(secundaria,1) + diag(secundaria,-1);
+    end
+    [multiplicadores, diagonal, superior] = factorizar_thomas(A);
+
+    u = u0(x(2:M));
+    u = u(:);
+    U = zeros(N+1,M+1);
+    U(1,2:M) = u';
+    residuos = zeros(N,1);
+    conv = 1;
+
+    for n = 1:N
+        % b = B_C*u (diagonal 1-mu, secundarias mu/2), sin formar B_C.
+        vecino_izq = [0; u(1:end-1)];
+        vecino_der = [u(2:end); 0];
+        b = (1 - mu)*u + (mu/2)*(vecino_izq + vecino_der);
+
+        u_nuevo = metodo_thomas(multiplicadores,diagonal,superior,b);
+
+        residuos(n) = norm(A*u_nuevo - b,2)/max(1,norm(b,2));
+        if ~(residuos(n) < tol)
+            conv = 0;
+            warning('Crank-Nicolson: fallo del sistema en el paso %d (t = %.6f s).',n,t(n+1));
             U = U(1:n,:);
             t = t(1:n);
             residuos = residuos(1:n);
