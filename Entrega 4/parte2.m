@@ -367,7 +367,8 @@ fprintf('Euler implicito: diagonal 1+2*mu y secundarias -mu.\n');
 fprintf('Crank-Nicolson: diagonal 1+mu y secundarias -mu/2.\n');
 fprintf('Para mu >= 0, ambas matrices son tridiagonales, simetricas y definidas positivas.\n');
 fprintf('La dominancia diagonal estricta garantiza pivotes no nulos para Thomas sin pivoteo.\n');
-fprintf('Thomas requiere O(M) operaciones por factorizacion y por solucion; no tiene iteraciones.\n');
+fprintf('La factorizacion y las sustituciones de Thomas requieren O(M) operaciones; no tiene iteraciones.\n');
+fprintf('La verificacion del residuo usa A densa y cuesta O(M^2) por paso; ese costo se incluye en los tiempos.\n');
 fprintf('Euler implicito resuelve (I+mu*K)*u_nuevo = u_anterior y es estable sin exigir mu <= 0.5.\n');
 fprintf('Euler explicito e implicito tienen error O(dt+dx^2); Crank-Nicolson, O(dt^2+dx^2).\n');
 fprintf('Al refinar solo una variable, el error de la otra puede dominar.\n');
@@ -459,7 +460,10 @@ analisis_ref = [analisis_ref, sprintf(['Los tiempos de las tablas incluyen la co
     'de Thomas y no tiene iteraciones internas. Al refinar el tiempo aumentan los pasos ', ...
     '(625, 1250 y 2500); al refinar el espacio aumentan las incognitas interiores ', ...
     '(24, 49 y 99). Las mediciones pueden fluctuar y no constituyen por si solas ', ...
-    'una estimacion del orden de complejidad.\n'])];
+    'una estimacion del orden de complejidad. ', ...
+    'La factorizacion y las sustituciones de Thomas cuestan O(M), pero la verificacion ', ...
+    'del residuo usa una matriz A densa y requiere O(M^2) por paso; ese costo tambien ', ...
+    'esta incluido en los tiempos.\n'])];
 
 % Mostrar el aporte y guardarlo como texto editable para que Persona 3 integre su informe.
 fprintf('\n%s',analisis_ref);
@@ -496,12 +500,13 @@ t_previo = t_f(n_cruce-1);
 Tmax_previo = Tmax_f(n_cruce-1);
 [~,i_max] = max(T_f(n_cruce,:));
 
-% Punto 11
+% Punto 11: separar el redondeo exacto del desplazamiento entre cruces discretos.
 t_star = log(80/(umbral-20))/(alpha*(pi/L)^2);
 n_exacto = ceil(t_star/dt - 1e-9);
 t_malla_exacto = n_exacto*dt;
 error_redondeo = t_malla_exacto - t_star;
-error_esquema = t_num - t_malla_exacto;
+% Esta diferencia incluye el efecto del esquema sobre el cruce y su discretizacion temporal.
+diferencia_cruces_discretos = t_num - t_malla_exacto;
 error_total = t_num - t_star;
 
 fprintf('\n=== Experimento final (Crank-Nicolson, M = %d, dt = %.3f s, tf = %d s) ===\n',M,dt,tf_f);
@@ -511,8 +516,9 @@ fprintf('Primer tiempo con max T <= %d C: t = %.2f s (n = %d), max T = %.6f C, e
 fprintf('Paso anterior: t = %.2f s, max T = %.6f C (> %d C)\n',t_previo,Tmax_previo,umbral);
 fprintf('Instante exacto t* = ln(8)/(alpha*(pi/L)^2) = %.6f s\n',t_star);
 fprintf('Primer tiempo de la malla con la solucion exacta: %.2f s\n',t_malla_exacto);
-fprintf('Numerico - exacto: %.6f s = redondeo (%.6f s) + esquema (%.6f s)\n', ...
-        error_total,error_redondeo,error_esquema);
+fprintf('Numerico - exacto: %.6f s = redondeo del cruce exacto (%.6f s) + diferencia entre cruces discretos (%.6f s)\n', ...
+        error_total,error_redondeo,diferencia_cruces_discretos);
+fprintf('La diferencia entre cruces discretos no es el error puro del esquema separado del redondeo.\n');
 
 % Punto 12: mapa de calor
 figure('position',[80,80,1000,700],'paperunits','inches', ...
@@ -563,11 +569,14 @@ fprintf('%-18s %-14.6e %-14.6e %-12.6f %-14.6e %-14s %-14s\n','Crank-Nicolson',E
 fprintf('\n=== Resumen del analisis ===\n');
 fprintf('1. Precision: con M = 50 y mu = %.2f domina el error espacial O(dx^2). En Euler explicito el error\n',mu);
 fprintf('   temporal tiene signo opuesto y compensa parte del espacial: E_f = %.2e (EE), %.2e (CN), %.2e (EI).\n',E_f_exp,E_f_cn,E_f_imp);
-fprintf('2. Costo: Euler explicito no resuelve sistemas; los implicitos usan Thomas, O(M) por paso, con A factorizada una vez.\n');
+fprintf('2. Costo: Euler explicito no resuelve sistemas; los implicitos reutilizan la factorizacion de Thomas.\n');
+fprintf('   Thomas requiere O(M) por solucion; verificar el residuo con A densa requiere O(M^2) por paso.\n');
 fprintf('3. Estabilidad: Euler explicito exige mu <= 1/2 (con mu = 0.6 crece la perturbacion); EI y CN son estables\n');
 fprintf('   para todo mu, pero estabilidad no implica precision.\n');
 fprintf('4. Residuos: maximo %.2e (EI) y %.2e (CN), muy por debajo de 1e-10; Thomas es directo (sin iteraciones).\n',residuo_max_imp,residuo_max_cn);
 fprintf('5. Enfriamiento: la temperatura maxima esta en x = L/2 y decae como exp(-alpha*(pi/L)^2*t); max T <= 30 C en\n');
-fprintf('   t = %.2f s (exacto %.4f s; diferencia %.4f s = redondeo %.4f + esquema %.4f).\n',t_num,t_star,error_total,error_redondeo,error_esquema);
+fprintf('   t = %.2f s (exacto %.4f s; diferencia total %.4f s).\n',t_num,t_star,error_total);
+fprintf('   Redondeo del cruce exacto: %.6f s; diferencia entre cruces discretos: %.6f s.\n', ...
+        error_redondeo,diferencia_cruces_discretos);
 fprintf('6. Fisica: el aislamiento lateral deja salir el calor solo por los extremos, fijos a 20 C (Dirichlet);\n');
 fprintf('   la barra tiende a 20 C uniforme y el perfil conserva la forma senoidal mientras decae.\n');
